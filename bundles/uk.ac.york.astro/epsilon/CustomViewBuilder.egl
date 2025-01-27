@@ -1,0 +1,34 @@
+package [%=targetPackage%].configuration.view;
+
+import org.eclipse.sirius.components.view.diagram.EdgeTool;
+import org.eclipse.sirius.components.view.diagram.NodeDescription;
+import [%=targetPackage%].helper.ViewBuilder;
+
+/**
+ * automatically generated
+ */
+public class [%=diagramAttributes.viewBuilder%] extends ViewBuilder {
+
+	[% for (nodeMappingAttributes in diagramAttributes.allNodeMappingsAttributes) {-%]
+		public static final String [%=nodeMappingAttributes.svg%] = "[%=nodeMappingAttributes.svgId%]";
+	[%}%]
+	
+	[% for (edgeMappingAttributes in diagramAttributes.edgeMappingsAttributes) {-%]
+		public EdgeTool createEdgeTool_[%=edgeMappingAttributes.description%](NodeDescription nodeDescription) {
+	        var setValueElement = this.viewBuilderHelper.newSetValue()
+	                .featureName("[%=edgeMappingAttributes.feature%]")
+	                .valueExpression("var:semanticEdgeTarget");
+	
+	        var changeContext = this.viewBuilderHelper.newChangeContext()
+	                .expression("var:semanticEdgeSource")
+	                .children(setValueElement.build());
+	
+	        return this.diagramBuilderHelper.newEdgeTool()
+	                .name("[%=edgeMappingAttributes.feature%]")
+	                .targetElementDescriptions(nodeDescription)
+	                .body(changeContext.build())
+	                .build();
+	    }
+	    
+	[%}%]
+}

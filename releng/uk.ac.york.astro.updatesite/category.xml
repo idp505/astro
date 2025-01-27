@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<site>
+   <feature id="uk.ac.york.astro.feature">
+      <category name="uk.ac.york.astro.category"/>
+   </feature>
+   <category-def name="uk.ac.york.astro.category" label="Astro"/>
+   <repository-reference location="http://download.eclipse.org/epsilon/updates/2.5/" name="Epsilon 2.5" enabled="true" />
+</site>

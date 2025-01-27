@@ -1,0 +1,612 @@
+pre {
+
+	var generatorParameters = P!GeneratorParameters.all.first();	
+	var packageName = M!EPackage.all.first().nsPrefix;
+	var pathCode = generatorParameters.projectPath + "/src/main/java/org/eclipse/" + generatorParameters.projectName + "/components/" + packageName.toLowerCase() + "/starter/";
+	var pathResources = generatorParameters.projectPath + "/src/main/resources/";
+	var diagramsAttributes : Sequence;
+	var allNodeMappingsAttributes : Sequence;
+	var allContainerMappingsAttributes : Sequence;
+	var allEdgeMappingsAttributes : Sequence;
+	var sourceAndTargetTypes : OrderedSet;
+	var colors : Map;
+	var svgColors = Sequence{"blanchedalmond", "deeppink", "goldenrod", "lightsteelblue", "plum", "turquoise", "cadetblue", "cornflowerblue", "darksalmon", "gainsboro", "honeydew", "lawngreen", "yellow", "mediumpurple"};
+
+	for (diagramDescription in O!DiagramDescription.all) {
+		diagramsAttributes.add(diagramDescription.getDiagramAttributes());
+	}
+	
+	var representationDescriptionProvider = diagramsAttributes.at(0).package.firstToUpperCase() + "RepresentationDescriptionProvider";
+
+	for (nodeMappingAttributes in allNodeMappingsAttributes) {
+		for (edgeMappingAttributes in allEdgeMappingsAttributes) {		
+			if (nodeMappingAttributes.type == edgeMappingAttributes.sourceType) {
+				nodeMappingAttributes.outgoingEdges.add(edgeMappingAttributes);
+			}
+		}
+	}
+	
+	for (edgeMappingAttributes in allEdgeMappingsAttributes) {
+		if (edgeMappingAttributes.hasTargetReconnectionTool == true) {
+			sourceAndTargetTypes.add(edgeMappingAttributes.sourceType);
+			sourceAndTargetTypes.add(edgeMappingAttributes.targetType);
+		}
+	}
+}
+
+
+
+operation DiagramDescription getDiagramAttributes() {
+	var diagramAttributes = new Tuple;
+	diagramAttributes.name = self.name.replace(" ", "");
+	diagramAttributes.diagramDomainClass = self.domainClass;
+	diagramAttributes.package = diagramAttributes.diagramDomainClass.split("::").at(0);
+	diagramAttributes.type = diagramAttributes.diagramDomainClass.split("::").at(1);
+	diagramAttributes.viewBuilder = diagramAttributes.name.firstToUpperCase() + "ViewBuilder";
+	diagramAttributes.viewDiagramDescriptionProvider = diagramAttributes.name.firstToUpperCase() + "ViewDiagramDescriptionProvider"; 
+	diagramAttributes.allNodeMappingsAttributes = new Sequence;
+	diagramAttributes.allContainerMappingsAttributes = new Sequence;
+	diagramAttributes.toolSections = self.defaultLayer.toolSections;	
+	if (self.defaultLayer.nodeMappings.size > 0) {
+		diagramAttributes.nodeMappingsAttributes = new Sequence;
+		for (nodeMapping in self.defaultLayer.nodeMappings) {
+			var newNodeMappingAttributes = nodeMapping.getNodeMappingAttributes(diagramAttributes);
+			if (newNodeMappingAttributes != null) {
+				diagramAttributes.nodeMappingsAttributes.add(newNodeMappingAttributes);
+			}
+		}
+	}
+	if (self.defaultLayer.containerMappings.size > 0) {
+		diagramAttributes.containerMappingsAttributes = new Sequence;
+		for (containerMapping in self.defaultLayer.containerMappings) {			
+			var newContainerMappingAttributes = containerMapping.getContainerMappingAttributes(diagramAttributes);
+			if (newContainerMappingAttributes != null) {
+				diagramAttributes.containerMappingsAttributes.add(newContainerMappingAttributes);
+			}
+		}
+	}		
+	if (self.defaultLayer.edgeMappings.size > 0) {
+		diagramAttributes.edgeMappingsAttributes = new Sequence;
+		for (edgeMapping in self.defaultLayer.edgeMappings) {
+			var newEdgeMappingAttributes = edgeMapping.geEdgeMappingAttributes(diagramAttributes);
+			if (newEdgeMappingAttributes != null) {
+				diagramAttributes.edgeMappingsAttributes.add(newEdgeMappingAttributes);
+			}
+		}
+	}
+	return diagramAttributes;
+}
+
+
+operation NodeMapping getNodeMappingAttributes(diagramAttributes : Tuple) {
+	if ("::".isSubstringOf(self.domainClass) == false) {
+		("NodeMapping has an invalid domainClass: " + self).println();
+		return null;
+	}
+	var nodeMappingAttributes = new Tuple;
+	nodeMappingAttributes.name = self.name;
+	nodeMappingAttributes.diagramAttributes = diagramAttributes;
+	nodeMappingAttributes.domainClass = self.domainClass;
+	nodeMappingAttributes.type = self.domainClass.split("::").at(1);	
+	nodeMappingAttributes.semanticCandidatesExpression = self.semanticCandidatesExpression;
+	nodeMappingAttributes.labelExpression = self.style.labelExpression;
+	nodeMappingAttributes.labelIsInside = (self.style.labelPosition.asString() == "node") ? true : false;
+	nodeMappingAttributes.resizeDirection = self.style.resizeKind.isDefined() ? self.style.resizeKind.asString().getResizeDirection() : "".getResizeDirection();
+	nodeMappingAttributes.feature = (nodeMappingAttributes.semanticCandidatesExpression != null) ? nodeMappingAttributes.semanticCandidatesExpression.split(":").at(1) : null;
+	nodeMappingAttributes.svg = nodeMappingAttributes.type.toUpperCase() + "_SVG_ID";
+	nodeMappingAttributes.svgPath = pathResources + "customImages/" + nodeMappingAttributes.type.toLowerCase() + ".svg";
+	nodeMappingAttributes.descriptionProvider = nodeMappingAttributes.type.firstToUpperCase() + "DescriptionProvider";
+	nodeMappingAttributes.outgoingEdges = new Sequence;	
+	nodeMappingAttributes.hasCreateTool = self.getHasCreateTool(diagramAttributes.toolSections.ownedTools);
+	nodeMappingAttributes.hasLabelEditTool = self.labelDirectEdit.isDefined();
+	nodeMappingAttributes.hasDeleteTool = self.deletionDescription.isDefined();
+	
+	diagramAttributes.allNodeMappingsAttributes.add(nodeMappingAttributes);
+	allNodeMappingsAttributes.add(nodeMappingAttributes);
+	if (self.borderedNodeMappings.size > 0) {
+		nodeMappingAttributes.borderedNodeMappings = new Sequence;
+		for (borderedNodeMapping in self.borderedNodeMappings) {
+			var newNodeMappingAttributes = borderedNodeMapping.getNodeMappingAttributes(diagramAttributes);
+			if (newNodeMappingAttributes != null) {
+				nodeMappingAttributes.borderedNodeMappings.add(newNodeMappingAttributes);
+			}
+		}
+	}
+	colors.put(self.style.labelColor.name, self.style.labelColor.getHexString());
+	colors.put(self.style.borderColor.name, self.style.borderColor.getHexString());
+	return nodeMappingAttributes;
+}
+
+
+operation ContainerMapping getContainerMappingAttributes(diagramAttributes : Tuple) {
+	if ("::".isSubstringOf(self.domainClass) == false) {
+		("ContainerMapping has an invalid domainClass: " + self).println();
+		return null;
+	}
+	var containerMappingAttributes = new Tuple;
+	containerMappingAttributes.name = self.name;
+	containerMappingAttributes.diagramAttributes = diagramAttributes;
+	containerMappingAttributes.domainClass = self.domainClass;
+	containerMappingAttributes.type = self.domainClass.split("::").at(1);
+	containerMappingAttributes.semanticCandidatesExpression = self.semanticCandidatesExpression;
+	containerMappingAttributes.labelExpression = self.style.labelExpression;
+	containerMappingAttributes.resizeDirection = "UserResizableDirection.BOTH";
+	containerMappingAttributes.feature = (containerMappingAttributes.semanticCandidatesExpression != null) ? containerMappingAttributes.semanticCandidatesExpression.split(":").at(1) : null;
+	containerMappingAttributes.svg = containerMappingAttributes.type.toUpperCase() + "_SVG_ID";
+	containerMappingAttributes.backgroundColor = self.style.backgroundColor.name;
+	containerMappingAttributes.borderColor = self.style.borderColor.name;
+	containerMappingAttributes.descriptionProvider = containerMappingAttributes.type.firstToUpperCase() + "DescriptionProvider";
+	containerMappingAttributes.subNodeMappings = new Sequence;
+	containerMappingAttributes.subContainerMappings = new Sequence;
+	containerMappingAttributes.hasCreateTool = self.getHasCreateTool(diagramAttributes.toolSections.ownedTools);
+	containerMappingAttributes.hasLabelEditTool = self.labelDirectEdit.isDefined();
+	containerMappingAttributes.hasDeleteTool = self.deletionDescription.isDefined();
+	
+	diagramAttributes.allContainerMappingsAttributes.add(containerMappingAttributes);
+	allContainerMappingsAttributes.add(containerMappingAttributes);
+	for (containerMapping in self.subContainerMappings) {	
+		var newContainerMappingAttributes = containerMapping.getContainerMappingAttributes(diagramAttributes);
+		if (newContainerMappingAttributes != null) {
+			containerMappingAttributes.subContainerMappings.add(newContainerMappingAttributes);
+		}		
+	}	
+	for (subNodeMapping in self.subNodeMappings) {	
+		var newNodeMappingAttributes = subNodeMapping.getNodeMappingAttributes(diagramAttributes);
+		if (newNodeMappingAttributes != null) {
+			containerMappingAttributes.subNodeMappings.add(newNodeMappingAttributes);
+		}		
+	}
+	colors.put(self.style.labelColor.name, self.style.labelColor.getHexString());
+	colors.put(self.style.borderColor.name, self.style.borderColor.getHexString());
+	colors.put(self.style.backgroundColor.name, self.style.backgroundColor.getHexString());
+	colors.put(self.style.foregroundColor.name, self.style.foregroundColor.getHexString());
+	return containerMappingAttributes;
+}
+
+
+operation EdgeMapping geEdgeMappingAttributes(diagramAttributes : Tuple) {
+	if ((self.sourceMapping == null) or (self.targetMapping == null)) {
+		("EdgeMapping must have both a sourceMapping and targetMapping: " + self).println();
+		return null;
+	}
+	var edgeMappingAttributes = new Tuple;
+    edgeMappingAttributes.name = self.name;
+    edgeMappingAttributes.diagramAttributes = diagramAttributes;
+    edgeMappingAttributes.sourceType = self.sourceMapping.at(0).domainClass.split("::").at(1);
+	edgeMappingAttributes.targetType = self.targetMapping.at(0).domainClass.split("::").at(1);
+	edgeMappingAttributes.feature = self.targetFinderExpression.split(":").at(1);
+	edgeMappingAttributes.isFeatureMultiValued = edgeMappingAttributes.feature.isFeatureMultiValued(edgeMappingAttributes.sourceType);	
+	edgeMappingAttributes.description = edgeMappingAttributes.feature + edgeMappingAttributes.sourceType + "To" + edgeMappingAttributes.targetType;
+	edgeMappingAttributes.descriptionProvider = edgeMappingAttributes.description.firstToUpperCase() + "DescriptionProvider";
+	edgeMappingAttributes.sourceDescriptionProvider = edgeMappingAttributes.sourceType.firstToUpperCase() + "DescriptionProvider";
+	edgeMappingAttributes.targetDescriptionProvider = edgeMappingAttributes.targetType.firstToUpperCase() + "DescriptionProvider";
+	edgeMappingAttributes.lineStyle = self.style.isDefined() ? self.style.lineStyle.asString().toUpperCase() : "SOLID";
+	edgeMappingAttributes.color = self.style.strokeColor.name;
+	edgeMappingAttributes.sourceArrowStyle = self.getArrowStyle(true);
+	edgeMappingAttributes.targetArrowStyle = self.getArrowStyle(false);
+	edgeMappingAttributes.hasCreateTool = self.getHasCreateTool(diagramAttributes.toolSections.ownedTools);
+	edgeMappingAttributes.hasLabelEditTool = self.labelDirectEdit.isDefined();
+	edgeMappingAttributes.hasDeleteTool = self.deletionDescription.isDefined();
+	edgeMappingAttributes.reconnectionTools = self.reconnections;
+	edgeMappingAttributes.hasTargetReconnectionTool = self.reconnections.exists(r|r.reconnectionKind.asString() == "RECONNECT_TARGET");
+	
+	allEdgeMappingsAttributes.add(edgeMappingAttributes);
+	colors.put(self.style.strokeColor.name, self.style.strokeColor.getHexString());
+	colors.put(self.style.centerLabelStyleDescription.labelColor.name, self.style.centerLabelStyleDescription.labelColor.getHexString());
+	return edgeMappingAttributes;
+}
+
+
+operation NodeMapping getHasCreateTool(ownedToolSections : Sequence) {
+	for (ownedToolSection in ownedToolSections) {
+		for (tool in ownedToolSection) {
+			if (tool.type().name == "NodeCreationDescription") {
+				for (toolMapping in tool.nodeMappings) {
+					if (toolMapping == self) {
+						return true;
+					}
+				}
+			}
+		}
+	}
+	return false;
+}
+
+
+operation ContainerMapping getHasCreateTool(ownedToolSections : Sequence) {
+	for (ownedToolSection in ownedToolSections) {
+		for (tool in ownedToolSection) {
+			if (tool.type().name == "ContainerCreationDescription") {
+				for (toolMapping in tool.containerMappings) {
+					if (toolMapping == self) {
+						return true;
+					}
+				}
+			}
+		}
+	}
+	return false;
+}
+
+
+operation EdgeMapping getHasCreateTool(ownedToolSections : Sequence) {
+	for (ownedToolSection in ownedToolSections) {
+		for (tool in ownedToolSection) {
+			if (tool.type().name == "EdgeCreationDescription") {
+				for (toolMapping in tool.edgeMappings) {
+					if (toolMapping == self) {
+						return true;
+					}
+				}
+			}
+		}
+	}
+	return false;
+}
+
+
+operation String isFeatureMultiValued(sourceType : String) {
+	var eClass = M!EClass.all.select(c|c.name=sourceType).first();
+	if (eClass != null) {
+		var feature = eClass.eStructuralFeatures.select(c|c.name=self).first();
+		return (feature.upperBound == -1);
+	}
+	return false;
+}
+
+
+operation String getResizeDirection() {
+	var resizeDirection = "UserResizableDirection.NONE";
+	switch (self) {
+		case "NSEW" : resizeDirection = "UserResizableDirection.BOTH";
+		case "NORTH_SOUTH" : resizeDirection = "UserResizableDirection.VERTICAL";
+		case "EAST_WEST" : resizeDirection = "UserResizableDirection.HORIZONTAL";
+		default : resizeDirection = "UserResizableDirection.NONE";
+	}
+	return resizeDirection;
+}
+
+
+operation String getStringWithUnderscores() : String {
+	var Character = Native("java.lang.Character");
+	var stringValue = new Native("java.lang.String")(self);
+	var stringWithUnderscores = "";
+	for (i in Sequence {0..stringValue.length()-1}) {
+		if (i>0 and Character.isUpperCase(stringValue.charAt(i)) and Character.isLowerCase(stringValue.charAt(i-1))) {
+			stringWithUnderscores += "_";
+		}
+		stringWithUnderscores += stringValue.characterAt(i);
+	}
+	return stringWithUnderscores.toUpperCase();
+}
+
+
+operation EdgeMapping getArrowStyle(isSource : Boolean) : String {
+    if (self.style.isDefined()) {
+		if (isSource) {
+			if (self.style.sourceArrow.asString() == "NoDecoration") {
+				return "NONE";
+			}
+			return self.style.sourceArrow.asString().getStringWithUnderscores();
+		}
+		else {
+			if (self.style.targetArrow.asString() == "NoDecoration") {
+				return "NONE";
+			}
+			return self.style.targetArrow.asString().getStringWithUnderscores();
+		}
+	}
+	return "NONE";
+}
+
+
+operation SystemColor getHexString() {
+	var integerType = Native("java.lang.Integer");
+	return ("#" + integerType.toHexString(self.red) + integerType.toHexString(self.green) + integerType.toHexString(self.blue)).toUpperCase();
+}
+
+
+operation String getImageId() {
+	var utilityService = new Native("uk.ac.york.astro.util.UtilityService");
+	var imageId = utilityService.GetImageId(self);
+	return imageId;
+}
+
+
+
+rule RepresentationDescriptionProvider {
+
+	parameters : Map {
+		"targetPackage" = generatorParameters.targetPackage,
+		"representationDescriptionProvider" = representationDescriptionProvider,
+		"package" = diagramsAttributes.at(0).package,
+		"colors" = colors,
+		"diagramsAttributes" = diagramsAttributes
+	}
+	
+	template : "RepresentationDescriptionProvider.egl"
+	target :  pathCode + "configuration/" + representationDescriptionProvider + ".java"
+	append: false
+
+}
+
+
+rule JavaService {
+
+	parameters : Map {
+		"targetPackage" = generatorParameters.targetPackage,
+		"packageName" = packageName,
+		"edgeMappingsAttributes" = allEdgeMappingsAttributes,
+		"sourceAndTargetTypes" = sourceAndTargetTypes
+	}
+	
+	template : "JavaService.egl"
+	target : pathCode + "configuration/view/" + packageName.firstToUpperCase() + "JavaService.java"
+	append: false
+
+}
+
+
+rule JavaServiceProvider {
+
+	parameters : Map {
+		"targetPackage" = generatorParameters.targetPackage,
+		"packageName" = packageName
+	}
+	
+	template : "JavaServiceProvider.egl"
+	target : pathCode + "configuration/view/" + packageName.firstToUpperCase() + "JavaServiceProvider.java"
+	append: false
+
+}
+
+
+rule EMFConfiguration {
+
+	parameters : Map {
+		"targetPackage" = generatorParameters.targetPackage,
+		"packageName" = packageName
+	}
+	
+	template : "EMFConfiguration.egl"
+	target : pathCode + "configuration/" + packageName.firstToUpperCase() + "EMFConfiguration.java"
+	append: false
+
+}
+
+
+rule ExampleBuilder {
+
+	parameters : Map {
+		"targetPackage" = generatorParameters.targetPackage,
+		"packageName" = packageName,
+		"rootClass" = M!EClass.all.first()
+	}
+	
+	template : "ExampleBuilder.egl"
+	target : pathCode + "configuration/" + packageName.firstToUpperCase() + "ExampleBuilder.java"
+	append: false
+
+}
+
+
+rule ProjectTemplatesProvider {
+
+	parameters : Map {
+		"targetPackage" = generatorParameters.targetPackage,
+		"packageName" = packageName
+	}
+	
+	template : "ProjectTemplatesProvider.egl"
+	target : pathCode + "configuration/" + packageName.firstToUpperCase() + "ProjectTemplatesProvider.java"
+	append: false
+
+}
+
+
+rule ProjectTemplatesInitializer {
+
+	parameters : Map {
+		"targetPackage" = generatorParameters.targetPackage,
+		"packageName" = packageName
+	}
+	
+	template : "ProjectTemplatesInitializer.egl"
+	target : pathCode + "configuration/" + packageName.firstToUpperCase() + "ProjectTemplatesInitializer.java"
+	append: false
+
+}
+
+
+rule EMFValidation {
+
+	parameters : Map {
+		"targetPackage" = generatorParameters.targetPackage,
+		"packageName" = packageName
+	}
+	
+	template : "EMFValidation.egl"
+	target : pathCode + "configuration/" + "EMFValidation.java"
+	append: false
+
+}
+
+
+rule Validator {
+
+	parameters : Map {
+		"targetPackage" = generatorParameters.targetPackage,
+		"packageName" = packageName
+	}
+	
+	template : "Validator.egl"
+	target : pathCode + "configuration/" + packageName.firstToUpperCase() + "Validator.java"
+	append: false
+
+}
+
+
+rule StereotypeBuilder {
+
+	parameters : Map {
+		"targetPackage" = generatorParameters.targetPackage
+	}
+	
+	template : "StereotypeBuilder.egl"
+	target : pathCode + "helper/" + "StereotypeBuilder.java"
+	append: false
+
+}
+
+
+rule ViewBuilder {
+
+	parameters : Map {
+		"targetPackage" = generatorParameters.targetPackage
+	}
+	
+	template : "ViewBuilder.egl"
+	target : pathCode + "helper/" + "ViewBuilder.java"
+	append: false
+
+}
+
+
+rule ViewDiagramElementFinder {
+
+	parameters : Map {
+		"targetPackage" = generatorParameters.targetPackage
+	}
+	
+	template : "ViewDiagramElementFinder.egl"
+	target : pathCode + "helper/" + "ViewDiagramElementFinder.java"
+	append: false
+
+}
+
+
+rule CustomImage
+	transform nodeMappingAttributes in: allNodeMappingsAttributes {
+	
+	pre {
+		var index = allNodeMappingsAttributes.indexOf(nodeMappingAttributes);
+	}
+	
+	parameters : Map {
+		"svgColor" = svgColors.get(index.mod(svgColors.size()))
+	}
+	
+	template : "CustomImage.egl"
+	target : nodeMappingAttributes.svgPath
+	append: false
+
+}
+
+
+rule CustomViewBuilder 
+	transform diagramAttributes in: diagramsAttributes {
+
+	pre {
+		for (nodeMappingAttributes in allNodeMappingsAttributes) {
+			nodeMappingAttributes.svgId = nodeMappingAttributes.svgPath.getImageId();
+		}
+	}
+
+	parameters : Map {
+		"targetPackage" = generatorParameters.targetPackage,
+		"diagramAttributes" = diagramAttributes
+	}
+	
+	template : "CustomViewBuilder.egl"
+	target : pathCode + "configuration/view/" + diagramAttributes.viewBuilder + ".java"
+	append: false
+
+}
+
+
+rule ViewDiagramDescriptionProvider
+	transform diagramAttributes in: diagramsAttributes {
+
+	parameters : Map {
+		"targetPackage" = generatorParameters.targetPackage,
+		"diagramAttributes" = diagramAttributes
+	}
+	
+	template : "ViewDiagramDescriptionProvider.egl"
+	target : pathCode + "configuration/view/" + diagramAttributes.viewDiagramDescriptionProvider + ".java"
+	append: false
+
+}
+
+
+rule NodeMappingDescriptionProvider
+	transform nodeMappingAttributes in: allNodeMappingsAttributes {
+
+	parameters : Map {
+		"targetPackage" = generatorParameters.targetPackage,
+		"nodeMappingAttributes" = nodeMappingAttributes
+	}
+	
+	template : "NodeMappingDescriptionProvider.egl"
+	target : pathCode + "configuration/view/descriptions/" + nodeMappingAttributes.descriptionProvider + ".java"
+	append: false
+
+}
+
+
+rule ContainerMappingDescriptionProvider
+	transform containerMappingAttributes in: allContainerMappingsAttributes {
+
+	parameters : Map {
+		"targetPackage" = generatorParameters.targetPackage,
+		"containerMappingAttributes" = containerMappingAttributes
+	}
+	
+	template : "ContainerMappingDescriptionProvider.egl"
+	target : pathCode + "configuration/view/descriptions/" + containerMappingAttributes.descriptionProvider + ".java"
+	append: false
+
+}
+
+
+rule EdgeMappingDescriptionProvider
+	transform edgeMappingAttributes in: allEdgeMappingsAttributes {
+
+	parameters : Map {
+		"targetPackage" = generatorParameters.targetPackage,
+		"edgeMappingAttributes" = edgeMappingAttributes
+	}
+	
+	template : "EdgeMappingDescriptionProvider.egl"
+	target : pathCode + "configuration/view/descriptions/" + edgeMappingAttributes.descriptionProvider + ".java"
+	append: false
+
+}
+
+
+rule TemplateImage {
+	
+	template : "TemplateImage.egl"
+	target : pathResources + "images/" + packageName.firstToUpperCase() + "-Template.png"
+	append: false
+
+}
+
+
+rule POM {
+	
+	parameters : Map {
+		"projectDirectoryName" = generatorParameters.projectPath.split("/").last(),
+		"projectName" = generatorParameters.projectName,
+		"packageName" = packageName,
+		"emfProject" = generatorParameters.emfProject,
+		"emfEditProject" = generatorParameters.emfEditProject,
+		"siriusWebVersion" = generatorParameters.siriusWebVersion,
+		"pomVersion" = generatorParameters.pomVersion
+	}
+	
+	template : "POM.egl"
+	target : generatorParameters.projectPath + "/pom.xml"
+	append: false
+
+}

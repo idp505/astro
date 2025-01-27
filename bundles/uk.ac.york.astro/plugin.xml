@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+	<extension point="org.eclipse.ui.commands">
+		<category
+			id="uk.ac.york.astro.category"
+			name="Sirius Web Generator">
+		</category>
+		<command
+			categoryId="uk.ac.york.astro.category"
+			defaultHandler="uk.ac.york.astro.handlers.SiriusWebGeneratorHandler"
+			id="uk.ac.york.astro.SiriusWebGenerator"
+			name="Generate Sirius Web Editor">
+		</command>
+		<command
+			categoryId="uk.ac.york.astro.category"
+			defaultHandler="uk.ac.york.astro.handlers.SiriusWebValidatorHandler"
+			id="uk.ac.york.astro.SiriusWebValidator"
+			name="Validate Sirius Models">
+		</command>
+	</extension>
+	<extension
+		point="org.eclipse.ui.menus">
+		<menuContribution
+			allPopups="false"
+			locationURI="popup:org.eclipse.ui.popup.any?before=compareWithMenu">
+			<menu
+				icon="icons/SiriusIcon.png"
+				label="Astro">
+				<command
+					commandId="uk.ac.york.astro.SiriusWebGenerator"
+					label="Generate Sirius Web Editor"
+					style="push">
+					<visibleWhen
+						checkEnabled="false">
+						<with
+							variable="activeMenuSelection">
+							<and>
+								<iterate operator="or"
+									ifEmpty="false">
+									<adapt
+										type="org.eclipse.core.resources.IResource">
+
+										<test
+											property="org.eclipse.core.resources.extension"
+											value="odesign">
+										</test>
+									</adapt>
+								</iterate>
+								<iterate operator="or"
+									ifEmpty="false">
+									<adapt
+										type="org.eclipse.core.resources.IResource">
+										<test
+											property="org.eclipse.core.resources.extension"
+											value="ecore">
+										</test>
+									</adapt>
+								</iterate>
+								<iterate operator="or"
+									ifEmpty="false">
+									<adapt
+										type="org.eclipse.core.resources.IResource">
+										<test
+											property="org.eclipse.core.resources.extension"
+											value="astro">
+										</test>
+									</adapt>
+								</iterate>
+							</and>
+						</with>
+					</visibleWhen>
+				</command>
+				<command
+					commandId="uk.ac.york.astro.SiriusWebValidator"
+					label="Validate Sirius Models"
+					style="push">
+					<visibleWhen
+						checkEnabled="false">
+						<with
+							variable="activeMenuSelection">
+							<and>
+								<iterate operator="or"
+									ifEmpty="false">
+									<adapt
+										type="org.eclipse.core.resources.IResource">
+
+										<test
+											property="org.eclipse.core.resources.extension"
+											value="odesign">
+										</test>
+									</adapt>
+								</iterate>
+								<iterate operator="or"
+									ifEmpty="false">
+									<adapt
+										type="org.eclipse.core.resources.IResource">
+										<test
+											property="org.eclipse.core.resources.extension"
+											value="ecore">
+										</test>
+									</adapt>
+								</iterate>
+								<iterate operator="or"
+									ifEmpty="false">
+									<adapt
+										type="org.eclipse.core.resources.IResource">
+										<test
+											property="org.eclipse.core.resources.extension"
+											value="astro">
+										</test>
+									</adapt>
+								</iterate>
+							</and>
+						</with>
+					</visibleWhen>
+				</command>
+			</menu>
+		</menuContribution>
+	</extension>
+	<extension
+		point="org.eclipse.epsilon.common.dt.tool">
+		<tool
+			class="uk.ac.york.astro.util.UtilityService"
+			defaultName="UtilityService">
+		</tool>
+	</extension>
+
+</plugin>

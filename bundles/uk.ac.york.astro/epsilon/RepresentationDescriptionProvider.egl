@@ -1,0 +1,117 @@
+package [%=targetPackage%].configuration;
+
+import java.util.Collection;
+import java.util.List;
+import java.util.Objects;
+import java.util.UUID;
+
+import org.eclipse.emf.ecore.EPackage;
+import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.eclipse.sirius.components.core.api.IEditingContext;
+import org.eclipse.sirius.components.core.api.IEditingContextRepresentationDescriptionProvider;
+import org.eclipse.sirius.components.emf.ResourceMetadataAdapter;
+import org.eclipse.sirius.components.emf.services.IDAdapter;
+import org.eclipse.sirius.components.emf.services.JSONResourceFactory;
+import org.eclipse.sirius.components.representations.IRepresentationDescription;
+import org.eclipse.sirius.components.view.ColorPalette;
+import org.eclipse.sirius.components.view.FixedColor;
+import org.eclipse.sirius.components.view.UserColor;
+import org.eclipse.sirius.components.view.View;
+import org.eclipse.sirius.components.view.ViewFactory;
+import org.eclipse.sirius.components.view.builder.generated.ViewBuilder;
+import org.eclipse.sirius.components.view.builder.providers.IColorProvider;
+import org.eclipse.sirius.components.view.emf.IViewConverter;
+import org.eclipse.sirius.emfjson.resource.JsonResource;
+import org.eclipse.sirius.web.services.api.representations.IInMemoryViewRegistry;
+[% for (diagramAttributes in diagramsAttributes) {-%]
+	import [%=targetPackage%].configuration.view.[%=diagramAttributes.viewDiagramDescriptionProvider%];
+[%}%]
+import org.springframework.stereotype.Service;
+
+/**
+ * automatically generated
+ */
+@Service
+public class [%=representationDescriptionProvider%] implements IEditingContextRepresentationDescriptionProvider {
+
+    private static final String [%=package.toUpperCase()%]_VIEW_DIAGRAM_ID = "[%=package.firstToUpperCase()%]Diagram";
+
+    private final IViewConverter viewConverter;
+
+    private final EPackage.Registry ePackagesRegistry;
+
+    private final IInMemoryViewRegistry inMemoryViewRegistry;
+
+    public [%=representationDescriptionProvider%](IViewConverter viewConverter, EPackage.Registry ePackagesRegistry, IInMemoryViewRegistry inMemoryViewRegistry) {
+        this.viewConverter = Objects.requireNonNull(viewConverter);
+        this.ePackagesRegistry = Objects.requireNonNull(ePackagesRegistry);
+        this.inMemoryViewRegistry = Objects.requireNonNull(inMemoryViewRegistry);
+    }
+
+    @Override
+    public List<IRepresentationDescription> getRepresentationDescriptions(IEditingContext editingContext) {
+        ViewBuilder viewBuilder = new ViewBuilder();
+        View view = viewBuilder.build();
+        IColorProvider colorProvider = new ColorProvider(view);
+
+        view.getColorPalettes().add(this.createColorPalette());
+
+		[% for (diagramAttributes in diagramsAttributes) {-%]
+        	view.getDescriptions().add(new [%=diagramAttributes.viewDiagramDescriptionProvider%]().create(colorProvider));
+		[%}%]
+		
+        // Add an ID to all view elements
+        view.eAllContents().forEachRemaining(eObject -> {
+            eObject.eAdapters().add(new IDAdapter(UUID.nameUUIDFromBytes(EcoreUtil.getURI(eObject).toString().getBytes())));
+        });
+
+        // All programmatic Views need to be stored in a Resource and registered in IInMemoryViewRegistry
+        String resourcePath = UUID.nameUUIDFromBytes([%=package.toUpperCase()%]_VIEW_DIAGRAM_ID.getBytes()).toString();
+        JsonResource resource = new JSONResourceFactory().createResourceFromPath(resourcePath);
+        resource.eAdapters().add(new ResourceMetadataAdapter([%=package.toUpperCase()%]_VIEW_DIAGRAM_ID));
+        resource.getContents().add(view);
+        this.inMemoryViewRegistry.register(view);
+
+        // Convert org.eclipse.sirius.components.view.RepresentationDescription to org.eclipse.sirius.components.representations.IRepresentationDescription
+        List<EPackage> staticEPackages = this.ePackagesRegistry.values().stream().filter(EPackage.class::isInstance).map(EPackage.class::cast).toList();
+        return this.viewConverter.convert(List.of(view), staticEPackages);
+    }
+
+    private ColorPalette createColorPalette() {
+        var colorPalette = ViewFactory.eINSTANCE.createColorPalette();
+
+		[% for (color in colors.keySet) {-%]
+	        colorPalette.getColors().add(this.createFixedColor("[%=color%]", "[%=colors.get(color)%]"));
+		[%}%]
+		
+        return colorPalette;
+    }
+
+    private FixedColor createFixedColor(String name, String value) {
+        var fixedColor = ViewFactory.eINSTANCE.createFixedColor();
+        fixedColor.setName(name);
+        fixedColor.setValue(value);
+
+        return fixedColor;
+    }
+    
+	public class ColorProvider implements IColorProvider {
+
+        private final View view;
+
+        public ColorProvider(View view) {
+            this.view = Objects.requireNonNull(view);
+        }
+
+        @Override
+        public UserColor getColor(String colorName) {
+            return this.view.getColorPalettes()
+                    .stream()
+                    .map(ColorPalette::getColors)
+                    .flatMap(Collection::stream)
+                    .filter(userColor -> userColor.getName().equals(colorName))
+                    .findFirst()
+                    .orElse(null);
+        }
+    }
+}

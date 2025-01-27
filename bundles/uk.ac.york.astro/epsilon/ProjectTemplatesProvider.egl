@@ -1,0 +1,27 @@
+package [%=targetPackage%].configuration;
+
+import java.util.List;
+
+import org.eclipse.sirius.web.services.api.projects.IProjectTemplateProvider;
+import org.eclipse.sirius.web.services.api.projects.ProjectTemplate;
+import org.springframework.context.annotation.Configuration;
+
+/**
+ * automatically generated
+ */
+@Configuration
+public class [%=packageName.firstToUpperCase()%]ProjectTemplatesProvider implements IProjectTemplateProvider {
+
+    public static final String [%=packageName.toUpperCase()%]_EXAMPLE_TEMPLATE_ID = "[%=packageName%]-template";
+
+    @Override
+    public List<ProjectTemplate> getProjectTemplates() {
+        var template = ProjectTemplate.newProjectTemplate([%=packageName.toUpperCase()%]_EXAMPLE_TEMPLATE_ID)
+                .label("[%=packageName.firstToUpperCase()%]")
+                .imageURL("/images/[%=packageName.firstToUpperCase()%]-Template.png")
+                .natures(List.of())
+                .build();
+        return List.of(template);
+    }
+
+}

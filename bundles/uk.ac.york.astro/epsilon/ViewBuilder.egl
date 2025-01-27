@@ -1,0 +1,75 @@
+package [%=targetPackage%].helper;
+
+import org.eclipse.sirius.components.view.builder.generated.DiagramBuilders;
+import org.eclipse.sirius.components.view.builder.generated.ViewBuilders;
+import org.eclipse.sirius.components.view.builder.providers.IColorProvider;
+import org.eclipse.sirius.components.view.diagram.DeleteTool;
+import org.eclipse.sirius.components.view.diagram.ImageNodeStyleDescription;
+import org.eclipse.sirius.components.view.diagram.InsideLabelDescription;
+import org.eclipse.sirius.components.view.diagram.InsideLabelPosition;
+import org.eclipse.sirius.components.view.diagram.LabelEditTool;
+import org.eclipse.sirius.components.view.diagram.OutsideLabelDescription;
+import org.eclipse.sirius.components.view.diagram.OutsideLabelPosition;
+
+/**
+ * automatically generated
+ */
+public class ViewBuilder {
+
+    protected final ViewBuilders viewBuilderHelper = new ViewBuilders();
+    protected final DiagramBuilders diagramBuilderHelper = new DiagramBuilders();
+
+    public ImageNodeStyleDescription createImageNodeStyleDescription(String shapeId, IColorProvider colorProvider) {
+        return this.diagramBuilderHelper.newImageNodeStyleDescription()
+                .shape(shapeId)
+                .borderColor(colorProvider.getColor("transparent"))
+                .borderSize(0)
+                .build();
+    }
+
+    public DeleteTool createDeleteTool() {
+        var changeContext = this.viewBuilderHelper.newChangeContext()
+                .expression("aql:self.defaultDelete()");
+
+        return this.diagramBuilderHelper.newDeleteTool()
+                .name("Delete from Model")
+                .body(changeContext.build())
+                .build();
+    }
+
+    public LabelEditTool createLabelEditTool() {
+        var callEditService = this.viewBuilderHelper.newChangeContext()
+                .expression("aql:self.defaultEditLabel(newLabel)");
+
+        return this.diagramBuilderHelper.newLabelEditTool()
+                .name("Edit")
+                .body(callEditService.build())
+                .build();
+    }
+
+    public InsideLabelDescription getInsideLabelDescription(IColorProvider colorProvider, String labelExpression) {
+        return this.getInsideLabelDescription(colorProvider, labelExpression, false, false, false);
+    }
+
+    public InsideLabelDescription getInsideLabelDescription(IColorProvider colorProvider, String labelExpression, boolean bold, boolean withHeader, boolean displayHeaderSeparator) {
+        return this.diagramBuilderHelper.newInsideLabelDescription()
+                .labelExpression(labelExpression)
+                .style(this.diagramBuilderHelper.newInsideLabelStyle()
+                        .bold(bold)
+                        .withHeader(withHeader)
+                        .displayHeaderSeparator(displayHeaderSeparator)
+                        .build())
+                .position(InsideLabelPosition.TOP_CENTER)
+                .build();
+    }
+
+    public OutsideLabelDescription getOutsideLabelDescription(IColorProvider colorProvider, String labelExpression) {
+        return this.diagramBuilderHelper.newOutsideLabelDescription()
+                .labelExpression(labelExpression)
+                .style(this.diagramBuilderHelper.newOutsideLabelStyle()
+                        .build())
+                .position(OutsideLabelPosition.BOTTOM_CENTER)
+                .build();
+    }
+
+}

@@ -1,0 +1,20 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Astro
+Bundle-SymbolicName: uk.ac.york.astro;singleton:=true
+Bundle-Vendor: University of York
+Bundle-Version: 1.0.0.qualifier
+Bundle-RequiredExecutionEnvironment: JavaSE-17
+Automatic-Module-Name: uk.ac.york.astro
+Export-Package: uk.ac.york.astro
+Require-Bundle: org.eclipse.sirius.diagram.model;bundle-version="7.0.6",
+ org.eclipse.sirius.properties;bundle-version="7.0.6",
+ org.eclipse.epsilon.emc.emf;bundle-version="2.5.0",
+ org.eclipse.epsilon.eol.engine;bundle-version="2.5.0",
+ org.eclipse.epsilon.egl.engine;bundle-version="2.5.0",
+ org.eclipse.ui;bundle-version="3.206.100",
+ org.eclipse.epsilon.eol.dt;bundle-version="2.5.0",
+ org.eclipse.epsilon.common.dt;bundle-version="2.5.0",
+ org.eclipse.epsilon.evl.engine;bundle-version="2.5.0",
+ org.eclipse.epsilon.evl.emf.validation;bundle-version="2.5.0",
+ uk.ac.york.astro.domain;bundle-version="0.1.0"

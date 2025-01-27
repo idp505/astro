@@ -1,0 +1,13 @@
+@namespace(uri="uk.ac.york.astro", prefix="astro")
+	
+package astro;
+
+class GeneratorParameters {
+	attr String emfProject;
+	attr String emfEditProject;
+	attr String pomVersion;
+	attr String siriusWebVersion;
+	attr String projectName;
+	attr String projectPath;
+	attr String targetPackage;
+}

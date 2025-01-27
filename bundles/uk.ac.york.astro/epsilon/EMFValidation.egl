@@ -1,0 +1,27 @@
+package [%=targetPackage%].configuration;
+
+import java.util.Objects;
+
+import org.eclipse.emf.ecore.EValidator;
+import org.springframework.context.annotation.Configuration;
+
+import jakarta.annotation.PostConstruct;
+import [%=packageName%].[%=packageName.firstToUpperCase()%]Package;
+
+/**
+ * automatically generated
+ */
+@Configuration
+public class EMFValidation {
+
+    private final EValidator.Registry eValidatorRegistry;
+
+    public EMFValidation(EValidator.Registry eValidatorRegistry) {
+        this.eValidatorRegistry = Objects.requireNonNull(eValidatorRegistry);
+    }
+
+    @PostConstruct
+    public void registerValidator() {
+        this.eValidatorRegistry.put([%=packageName.firstToUpperCase()%]Package.eINSTANCE, new [%=packageName.firstToUpperCase()%]Validator());
+    }
+}

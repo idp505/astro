@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<description:Group xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:description="http://www.eclipse.org/sirius/description/1.1.0" xmlns:description_1="http://www.eclipse.org/sirius/diagram/description/1.1.0" xmlns:filter="http://www.eclipse.org/sirius/diagram/description/filter/1.1.0" xmlns:style="http://www.eclipse.org/sirius/diagram/description/style/1.1.0" xmlns:tool="http://www.eclipse.org/sirius/diagram/description/tool/1.1.0" xmlns:tool_1="http://www.eclipse.org/sirius/description/tool/1.1.0" name="workload" version="12.0.0.2017041100">
+  <ownedViewpoints name="MyViewpoint">
+    <ownedRepresentations xsi:type="description_1:DiagramDescription" name="Bordered Nodes Diagram" domainClass="workload::Project" enablePopupBars="true">
+      <filters xsi:type="filter:CompositeFilterDescription" name="FilterPersons">
+        <filters xsi:type="filter:MappingFilter" mappings="//@ownedViewpoints[name='MyViewpoint']/@ownedRepresentations[name='Bordered%20Nodes%20Diagram']/@defaultLayer/@nodeMappings[name='Person%20node']"/>
+      </filters>
+      <defaultLayer name="Default">
+        <nodeMappings name="Person node" labelDirectEdit="//@ownedViewpoints[name='MyViewpoint']/@ownedRepresentations[name='Bordered%20Nodes%20Diagram']/@defaultLayer/@toolSections.0/@ownedTools[name='name']" semanticCandidatesExpression="feature:people" domainClass="workload::Person">
+          <style xsi:type="style:WorkspaceImageDescription" labelSize="12" showIcon="false" sizeComputationExpression="-1" resizeKind="NSEW" workspacePath="/workload.design/icons/person.svg">
+            <borderColor xsi:type="description:SystemColor" href="environment:/viewpoint#//@systemColors/@entries[name='black']"/>
+            <labelColor xsi:type="description:SystemColor" href="environment:/viewpoint#//@systemColors/@entries[name='black']"/>
+          </style>
+        </nodeMappings>
+        <edgeMappings name="Task Dependencies Edge" deletionDescription="//@ownedViewpoints[name='MyViewpoint']/@ownedRepresentations[name='Bordered%20Nodes%20Diagram']/@defaultLayer/@toolSections.0/@ownedTools[name='Task%20Dependencies%20Edge']" sourceMapping="//@ownedViewpoints[name='MyViewpoint']/@ownedRepresentations[name='Bordered%20Nodes%20Diagram']/@defaultLayer/@containerMappings[name='Workpackage%20container']/@subNodeMappings[name='Task%20node']" targetMapping="//@ownedViewpoints[name='MyViewpoint']/@ownedRepresentations[name='Bordered%20Nodes%20Diagram']/@defaultLayer/@containerMappings[name='Workpackage%20container']/@subNodeMappings[name='Task%20node']" targetFinderExpression="feature:dependencies" reconnections="//@ownedViewpoints[name='MyViewpoint']/@ownedRepresentations[name='Bordered%20Nodes%20Diagram']/@defaultLayer/@toolSections.0/@ownedTools[name='Task%20Dependencies']">
+          <style sizeComputationExpression="2">
+            <strokeColor xsi:type="description:SystemColor" href="environment:/viewpoint#//@systemColors/@entries[name='dark_green']"/>
+            <centerLabelStyleDescription labelSize="12">
+              <labelColor xsi:type="description:SystemColor" href="environment:/viewpoint#//@systemColors/@entries[name='black']"/>
+            </centerLabelStyleDescription>
+          </style>
+        </edgeMappings>
+        <edgeMappings name="Task Leader Edge" sourceMapping="//@ownedViewpoints[name='MyViewpoint']/@ownedRepresentations[name='Bordered%20Nodes%20Diagram']/@defaultLayer/@containerMappings[name='Workpackage%20container']/@subNodeMappings[name='Task%20node']" targetMapping="//@ownedViewpoints[name='MyViewpoint']/@ownedRepresentations[name='Bordered%20Nodes%20Diagram']/@defaultLayer/@nodeMappings[name='Person%20node']" targetFinderExpression="feature:leader" reconnections="//@ownedViewpoints[name='MyViewpoint']/@ownedRepresentations[name='Bordered%20Nodes%20Diagram']/@defaultLayer/@toolSections.0/@ownedTools[name='Task%20Leader']">
+          <style sizeComputationExpression="2">
+            <strokeColor xsi:type="description:SystemColor" href="environment:/viewpoint#//@systemColors/@entries[name='dark_purple']"/>
+            <centerLabelStyleDescription labelSize="12">
+              <labelColor xsi:type="description:SystemColor" href="environment:/viewpoint#//@systemColors/@entries[name='black']"/>
+            </centerLabelStyleDescription>
+          </style>
+        </edgeMappings>
+        <containerMappings name="Workpackage container" labelDirectEdit="//@ownedViewpoints[name='MyViewpoint']/@ownedRepresentations[name='Bordered%20Nodes%20Diagram']/@defaultLayer/@toolSections.0/@ownedTools[name='name']" semanticCandidatesExpression="feature:workpackages" domainClass="workload::Workpackage">
+          <subNodeMappings name="Task node" deletionDescription="//@ownedViewpoints[name='MyViewpoint']/@ownedRepresentations[name='Bordered%20Nodes%20Diagram']/@defaultLayer/@toolSections.0/@ownedTools[name='Task']" labelDirectEdit="//@ownedViewpoints[name='MyViewpoint']/@ownedRepresentations[name='Bordered%20Nodes%20Diagram']/@defaultLayer/@toolSections.0/@ownedTools[name='name']" semanticCandidatesExpression="feature:tasks" domainClass="workload::Task">
+            <borderedNodeMappings name="Effort BorderedNode" semanticCandidatesExpression="feature:efforts" domainClass="workload::Effort">
+              <style xsi:type="style:WorkspaceImageDescription" labelSize="12" showIcon="false" labelExpression="Effort" sizeComputationExpression="5" resizeKind="NSEW" workspacePath="/workload.design/icons/effort.svg">
+                <borderColor xsi:type="description:SystemColor" href="environment:/viewpoint#//@systemColors/@entries[name='black']"/>
+                <labelColor xsi:type="description:SystemColor" href="environment:/viewpoint#//@systemColors/@entries[name='black']"/>
+              </style>
+            </borderedNodeMappings>
+            <style xsi:type="style:WorkspaceImageDescription" labelSize="12" showIcon="false" sizeComputationExpression="-1" resizeKind="NSEW" workspacePath="/workload.design/icons/task.svg">
+              <borderColor xsi:type="description:SystemColor" href="environment:/viewpoint#//@systemColors/@entries[name='black']"/>
+              <labelColor xsi:type="description:SystemColor" href="environment:/viewpoint#//@systemColors/@entries[name='black']"/>
+            </style>
+          </subNodeMappings>
+          <style xsi:type="style:FlatContainerStyleDescription" borderSizeComputationExpression="1" labelSize="12" showIcon="false">
+            <borderColor xsi:type="description:SystemColor" href="environment:/viewpoint#//@systemColors/@entries[name='black']"/>
+            <labelColor xsi:type="description:SystemColor" href="environment:/viewpoint#//@systemColors/@entries[name='black']"/>
+            <backgroundColor xsi:type="description:SystemColor" href="environment:/viewpoint#//@systemColors/@entries[name='white']"/>
+            <foregroundColor xsi:type="description:SystemColor" href="environment:/viewpoint#//@systemColors/@entries[name='light_gray']"/>
+          </style>
+        </containerMappings>
+        <toolSections name="Tools">
+          <ownedTools xsi:type="tool:NodeCreationDescription" name="Node Person" nodeMappings="//@ownedViewpoints[name='MyViewpoint']/@ownedRepresentations[name='Bordered%20Nodes%20Diagram']/@defaultLayer/@nodeMappings[name='Person%20node']">
+            <variable name="container"/>
+            <viewVariable name="containerView"/>
+            <initialOperation>
+              <firstModelOperations xsi:type="tool_1:ChangeContext" browseExpression="var:container">
+                <subModelOperations xsi:type="tool_1:CreateInstance" typeName="workload::Person" referenceName="people"/>
+              </firstModelOperations>
+            </initialOperation>
+          </ownedTools>
+          <ownedTools xsi:type="tool:NodeCreationDescription" name="Node Task" nodeMappings="//@ownedViewpoints[name='MyViewpoint']/@ownedRepresentations[name='Bordered%20Nodes%20Diagram']/@defaultLayer/@containerMappings[name='Workpackage%20container']/@subNodeMappings[name='Task%20node']">
+            <variable name="container"/>
+            <viewVariable name="containerView"/>
+            <initialOperation>
+              <firstModelOperations xsi:type="tool_1:ChangeContext" browseExpression="var:container">
+                <subModelOperations xsi:type="tool_1:CreateInstance" typeName="workload::Task" referenceName="tasks"/>
+              </firstModelOperations>
+            </initialOperation>
+          </ownedTools>
+          <ownedTools xsi:type="tool:NodeCreationDescription" name="Node Effort" nodeMappings="//@ownedViewpoints[name='MyViewpoint']/@ownedRepresentations[name='Bordered%20Nodes%20Diagram']/@defaultLayer/@containerMappings[name='Workpackage%20container']/@subNodeMappings[name='Task%20node']/@borderedNodeMappings[name='Effort%20BorderedNode']">
+            <variable name="container"/>
+            <viewVariable name="containerView"/>
+            <initialOperation>
+              <firstModelOperations xsi:type="tool_1:ChangeContext" browseExpression="var:container">
+                <subModelOperations xsi:type="tool_1:CreateInstance" typeName="workload::Effort" referenceName="efforts"/>
+              </firstModelOperations>
+            </initialOperation>
+          </ownedTools>
+          <ownedTools xsi:type="tool:ContainerCreationDescription" name="Container Workpackage" containerMappings="//@ownedViewpoints[name='MyViewpoint']/@ownedRepresentations[name='Bordered%20Nodes%20Diagram']/@defaultLayer/@containerMappings[name='Workpackage%20container']">
+            <variable name="container"/>
+            <viewVariable name="containerView"/>
+            <initialOperation>
+              <firstModelOperations xsi:type="tool_1:ChangeContext" browseExpression="var:container">
+                <subModelOperations xsi:type="tool_1:CreateInstance" typeName="workload::Workpackage" referenceName="workpackages"/>
+              </firstModelOperations>
+            </initialOperation>
+          </ownedTools>
+          <ownedTools xsi:type="tool:DirectEditLabel" name="name">
+            <mask mask="{0}"/>
+            <initialOperation>
+              <firstModelOperations xsi:type="tool_1:SetValue" featureName="name" valueExpression="var:0"/>
+            </initialOperation>
+          </ownedTools>
+          <ownedTools xsi:type="tool:DeleteElementDescription" name="Task Dependencies Edge">
+            <element name="element"/>
+            <elementView name="elementView"/>
+            <containerView name="containerView"/>
+            <initialOperation>
+              <firstModelOperations xsi:type="tool_1:ChangeContext" browseExpression="var:element">
+                <subModelOperations xsi:type="tool_1:Unset" featureName="dependencies" elementExpression="aql: elementView.targetNode.oclAsType(diagram::DNode).target"/>
+              </firstModelOperations>
+            </initialOperation>
+          </ownedTools>
+          <ownedTools xsi:type="tool:DeleteElementDescription" name="Task">
+            <element name="element"/>
+            <elementView name="elementView"/>
+            <containerView name="containerView"/>
+            <initialOperation>
+              <firstModelOperations xsi:type="tool_1:Unset" featureName="leader"/>
+            </initialOperation>
+          </ownedTools>
+          <ownedTools xsi:type="tool:ReconnectEdgeDescription" name="Task Leader">
+            <source name="source"/>
+            <target name="target"/>
+            <sourceView name="sourceView"/>
+            <targetView name="targetView"/>
+            <element name="element"/>
+            <initialOperation>
+              <firstModelOperations xsi:type="tool_1:ChangeContext" browseExpression="var:element">
+                <subModelOperations xsi:type="tool_1:SetValue" featureName="leader" valueExpression="var:target"/>
+              </firstModelOperations>
+            </initialOperation>
+            <edgeView name="edgeView"/>
+          </ownedTools>
+          <ownedTools xsi:type="tool:ReconnectEdgeDescription" name="Task Dependencies">
+            <source name="source"/>
+            <target name="target"/>
+            <sourceView name="sourceView"/>
+            <targetView name="targetView"/>
+            <element name="element"/>
+            <initialOperation>
+              <firstModelOperations xsi:type="tool_1:ChangeContext" browseExpression="var:element">
+                <subModelOperations xsi:type="tool_1:Unset" featureName="dependencies" elementExpression="var:source"/>
+                <subModelOperations xsi:type="tool_1:SetValue" featureName="dependencies" valueExpression="var:target"/>
+              </firstModelOperations>
+            </initialOperation>
+            <edgeView name="edgeView"/>
+          </ownedTools>
+          <ownedTools xsi:type="tool:EdgeCreationDescription" name="Task Leader" edgeMappings="//@ownedViewpoints[name='MyViewpoint']/@ownedRepresentations[name='Bordered%20Nodes%20Diagram']/@defaultLayer/@edgeMappings[name='Task%20Leader%20Edge']">
+            <sourceVariable name="source"/>
+            <targetVariable name="target"/>
+            <sourceViewVariable name="sourceView"/>
+            <targetViewVariable name="targetView"/>
+            <initialOperation>
+              <firstModelOperations xsi:type="tool_1:ChangeContext" browseExpression="var:source">
+                <subModelOperations xsi:type="tool_1:SetValue" featureName="leader" valueExpression="var:target"/>
+              </firstModelOperations>
+            </initialOperation>
+          </ownedTools>
+          <ownedTools xsi:type="tool:EdgeCreationDescription" name="Task Dependencies" edgeMappings="//@ownedViewpoints[name='MyViewpoint']/@ownedRepresentations[name='Bordered%20Nodes%20Diagram']/@defaultLayer/@edgeMappings[name='Task%20Dependencies%20Edge']">
+            <sourceVariable name="source"/>
+            <targetVariable name="target"/>
+            <sourceViewVariable name="sourceView"/>
+            <targetViewVariable name="targetView"/>
+            <initialOperation>
+              <firstModelOperations xsi:type="tool_1:ChangeContext" browseExpression="var:source">
+                <subModelOperations xsi:type="tool_1:SetValue" featureName="dependencies" valueExpression="var:target"/>
+              </firstModelOperations>
+            </initialOperation>
+          </ownedTools>
+        </toolSections>
+      </defaultLayer>
+    </ownedRepresentations>
+    <ownedJavaExtensions qualifiedClassName="org.eclipse.sirius.components.workload.starter.configuration.view.WorkloadJavaService"/>
+  </ownedViewpoints>
+</description:Group>

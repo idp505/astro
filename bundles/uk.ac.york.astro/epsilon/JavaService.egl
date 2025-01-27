@@ -1,0 +1,48 @@
+package [%=targetPackage%].configuration.view;
+
+import java.util.Objects;
+
+import org.eclipse.sirius.components.core.api.IFeedbackMessageService;
+import org.eclipse.sirius.components.core.api.IObjectService;
+import org.eclipse.sirius.components.core.api.IRepresentationDescriptionSearchService;
+
+[% for (type in sourceAndTargetTypes) {-%]
+	import [%=packageName%].[%=type%];
+[%}%]
+
+/**
+ * automatically generated
+ */
+public class [%=packageName.firstToUpperCase()%]JavaService {
+
+    protected final IObjectService objectService;
+    protected final IRepresentationDescriptionSearchService representationDescriptionSearchService;
+    protected final IFeedbackMessageService feedbackMessageService;
+
+    public WorkloadJavaService(IObjectService objectService, IRepresentationDescriptionSearchService representationDescriptionSearchService, IFeedbackMessageService feedbackMessageService) {
+        this.objectService = Objects.requireNonNull(objectService);
+        this.representationDescriptionSearchService = Objects.requireNonNull(representationDescriptionSearchService);
+        this.feedbackMessageService = Objects.requireNonNull(feedbackMessageService);
+    }
+   
+    [% for (edgeMappingAttributes in edgeMappingsAttributes) {-%]
+    	[% for (reconnectionTool in edgeMappingAttributes.reconnectionTools) {-%]
+	    	[%if(reconnectionTool.reconnectionKind.asString() == "RECONNECT_TARGET"){-%]
+	    		[%if(edgeMappingAttributes.isFeatureMultiValued == false){-%]
+					public Object changeTarget_[%=edgeMappingAttributes.description%]([%=edgeMappingAttributes.sourceType%] [%=edgeMappingAttributes.sourceType.firstToLowerCase()%]Source, [%=edgeMappingAttributes.targetType%] [%=edgeMappingAttributes.targetType.firstToLowerCase()%]Target) {
+						[%=edgeMappingAttributes.sourceType.firstToLowerCase()%]Source.set[%=edgeMappingAttributes.feature.firstToUpperCase()%]([%=edgeMappingAttributes.targetType.firstToLowerCase()%]Target);
+						return [%=edgeMappingAttributes.sourceType.firstToLowerCase()%]Source;
+					}
+				[%}%]
+				[%else {-%]
+					public Object changeTarget_[%=edgeMappingAttributes.description%]([%=edgeMappingAttributes.sourceType%] [%=edgeMappingAttributes.sourceType.firstToLowerCase()%]Source, [%=edgeMappingAttributes.targetType%] [%=edgeMappingAttributes.targetType.firstToLowerCase()%]TargetOld, [%=edgeMappingAttributes.targetType%] [%=edgeMappingAttributes.targetType.firstToLowerCase()%]TargetNew) {
+						[%=edgeMappingAttributes.sourceType.firstToLowerCase()%]Source.get[%=edgeMappingAttributes.feature.firstToUpperCase()%]().remove([%=edgeMappingAttributes.targetType.firstToLowerCase()%]TargetOld);
+						[%=edgeMappingAttributes.sourceType.firstToLowerCase()%]Source.get[%=edgeMappingAttributes.feature.firstToUpperCase()%]().add([%=edgeMappingAttributes.targetType.firstToLowerCase()%]TargetNew);					
+						return [%=edgeMappingAttributes.sourceType.firstToLowerCase()%]Source;
+					}
+				[%}%]
+				
+			[%}%]
+		[%}%]
+	[%}%]
+}

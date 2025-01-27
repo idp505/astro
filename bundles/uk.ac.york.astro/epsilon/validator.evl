@@ -1,0 +1,95 @@
+pre {
+	var metamodelPrefix = M!EPackage.all.first().nsPrefix;
+	var metamodelFirstClass = M!EClass.all.first();
+}
+
+
+context P!GeneratorParameters {
+
+	constraint HasValidProjectPath {
+		check : self.projectPath.isValidPath()
+		message : 'projectPath "' + self.projectPath + '" must contain "/"'
+	}
+
+	constraint HasValidPomVersion {
+		check : self.pomVersion.isValidVersion()
+		message : 'pomVersion "' + self.pomVersion + '" must follow the format: %d.%.d.%d'
+	}
+	
+	constraint HasValidSiriusWebVersion {
+		check : self.siriusWebVersion.isValidVersion()
+		message : 'siriusWebVersion "' + self.siriusWebVersion + '" must follow the format: %d.%.d.%d'
+	}
+}
+
+
+context O!DiagramDescription {
+
+	constraint HasValidDomainClass {
+		check : "::".isSubstringOf(self.domainClass)
+		message : 'domainClass "' + self.domainClass + '" must contain "::"'
+	}
+}
+
+context O!NodeMapping {
+
+	constraint HasValidDomainClass {
+		check : "::".isSubstringOf(self.domainClass)
+		message : 'domainClass "' + self.domainClass + '" must contain "::"'
+	}
+	
+	constraint HasValidSemanticCandidatesExpression {
+		check : ":".isSubstringOf(self.semanticCandidatesExpression)
+		message : 'semanticCandidatesExpression "' + self.semanticCandidatesExpression + '" must contain ":"'
+	}
+}
+
+context O!ContainerMapping {
+
+	constraint HasValidDomainClass {
+		check : "::".isSubstringOf(self.domainClass)
+		message : 'domainClass "' + self.domainClass + '" must contain "::"'
+	}
+	
+	constraint HasValidSemanticCandidatesExpression {
+		check : ":".isSubstringOf(self.semanticCandidatesExpression)
+		message : 'semanticCandidatesExpression "' + self.semanticCandidatesExpression + '" must contain ":"'
+	}
+}
+
+context O!EdgeMapping {
+	
+	constraint HasValidTargetFinderExpression {
+		check : ":".isSubstringOf(self.targetFinderExpression)
+		message : 'targetFinderExpression "' + self.targetFinderExpression + '" must contain ":"'
+	}
+}
+
+
+constraint MetamodelHasPrefix {
+	check : metamodelPrefix != ""
+	message : 'The metamodel must have a package prefix.'
+}
+
+constraint MetamodelHasAClass {
+	check : metamodelFirstClass != null
+	message : 'The metamodel must contain at least one class.'
+}
+
+
+operation String isValidVersion() : Boolean {
+	var versions = self.split('\\.');
+	if (versions.size != 3) {
+		return false;
+	}
+	for (version in versions) {
+		if (version.isInteger() == false) {
+			return false;
+		}
+	}
+	return true;	
+}
+
+operation String isValidPath() : Boolean {
+	return '/'.isSubstringOf(self);
+}

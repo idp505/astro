@@ -1,0 +1,30 @@
+package [%=targetPackage%].configuration.view;
+
+import java.util.List;
+
+import org.eclipse.sirius.components.view.RepresentationDescription;
+import org.eclipse.sirius.components.view.View;
+import org.eclipse.sirius.components.view.emf.IJavaServiceProvider;
+import org.springframework.stereotype.Service;
+
+/**
+ * automatically generated
+ */
+@Service
+public class [%=packageName.firstToUpperCase()%]JavaServiceProvider implements IJavaServiceProvider {
+
+    @Override
+    public List<Class<?>> getServiceClasses(View view) {
+        boolean isRelatedView = view.getDescriptions().stream()
+                .map(RepresentationDescription.class::cast)
+                .anyMatch(representationDescription -> {
+                    return representationDescription.getDomainType().contains("[%=packageName%]::");
+                });
+
+        if (isRelatedView) {
+            return List.of([%=packageName.firstToUpperCase()%]JavaService.class);
+        }
+        return List.of();
+    }
+
+}

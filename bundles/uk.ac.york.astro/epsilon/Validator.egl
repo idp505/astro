@@ -1,0 +1,35 @@
+package [%=targetPackage%].configuration;
+
+import java.util.Map;
+
+import org.eclipse.emf.common.util.DiagnosticChain;
+import org.eclipse.emf.ecore.EClass;
+import org.eclipse.emf.ecore.EDataType;
+import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.EValidator;
+import org.springframework.stereotype.Service;
+
+/**
+ * automatically generated
+ */
+@Service
+public class [%=packageName.firstToUpperCase()%]Validator implements EValidator {
+
+	// define your custom validation logic
+
+    @Override
+    public boolean validate(EObject eObject, DiagnosticChain diagnostics, Map<Object, Object> context) {
+        return true;
+    }
+
+    @Override
+    public boolean validate(EClass eClass, EObject eObject, DiagnosticChain diagnostics, Map<Object, Object> context) {
+        return true;
+    }
+
+    @Override
+    public boolean validate(EDataType eDataType, Object value, DiagnosticChain diagnostics, Map<Object, Object> context) {
+        return true;
+    }
+
+}

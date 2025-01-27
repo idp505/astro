@@ -1,0 +1,123 @@
+package [%=targetPackage%].configuration.view;
+
+import java.util.List;
+
+import org.eclipse.sirius.components.view.RepresentationDescription;
+import org.eclipse.sirius.components.view.builder.IViewDiagramElementFinder;
+import org.eclipse.sirius.components.view.builder.generated.DiagramBuilders;
+import org.eclipse.sirius.components.view.builder.generated.ViewBuilders;
+import org.eclipse.sirius.components.view.builder.providers.IColorProvider;
+import org.eclipse.sirius.components.view.builder.providers.IDiagramElementDescriptionProvider;
+import org.eclipse.sirius.components.view.builder.providers.IRepresentationDescriptionProvider;
+import org.eclipse.sirius.components.view.diagram.DiagramPalette;
+import org.eclipse.sirius.components.view.diagram.DiagramToolSection;
+import org.eclipse.sirius.components.view.diagram.NodeTool;
+import org.eclipse.sirius.components.view.diagram.SynchronizationPolicy;
+[% for (nodeMappingAttributes in diagramAttributes.allNodeMappingsAttributes) {-%]
+	import [%=targetPackage%].configuration.view.descriptions.[%=nodeMappingAttributes.descriptionProvider%];
+[%}%]
+[% for (containerMappingAttributes in diagramAttributes.allContainerMappingsAttributes) {-%]
+	import [%=targetPackage%].configuration.view.descriptions.[%=containerMappingAttributes.descriptionProvider%];
+[%}%]
+[% for (edgeMappingAttributes in diagramAttributes.edgeMappingsAttributes) {-%]
+	import [%=targetPackage%].configuration.view.descriptions.[%=edgeMappingAttributes.descriptionProvider%];
+[%}%]
+import [%=targetPackage%].helper.ViewDiagramElementFinder;
+
+/**
+ * automatically generated
+ */
+@SuppressWarnings("checkstyle:MultipleStringLiterals")
+public class [%=diagramAttributes.viewDiagramDescriptionProvider%] implements IRepresentationDescriptionProvider {
+
+    private final DiagramBuilders diagramBuilderHelper = new DiagramBuilders();
+
+    private final ViewBuilders viewBuilderHelper = new ViewBuilders();
+
+    @Override
+    public RepresentationDescription create(IColorProvider colorProvider) {
+        var diagramDescriptionBuilder = this.diagramBuilderHelper.newDiagramDescription();
+        var diagramDescription = diagramDescriptionBuilder
+	            .autoLayout(false)
+	            .domainType("[%=diagramAttributes.diagramDomainClass%]")
+	            .name("[%=diagramAttributes.type%]Custom")
+	            .titleExpression("[%=diagramAttributes.type%]Custom").build();
+
+		var cache = new ViewDiagramElementFinder();
+        var diagramElementDescriptionProviders = List.of(  
+	       	[% for (nodeMappingAttributes in diagramAttributes.allNodeMappingsAttributes) {-%]
+				new [%=nodeMappingAttributes.descriptionProvider%](colorProvider, SynchronizationPolicy.SYNCHRONIZED)[%if(hasMore or diagramAttributes.allContainerMappingsAttributes.size > 0){%],[%}%] 
+			[%}%]
+			[% for (containerMappingAttributes in diagramAttributes.allContainerMappingsAttributes) {-%]
+				new [%=containerMappingAttributes.descriptionProvider%](colorProvider, SynchronizationPolicy.SYNCHRONIZED)[%if(hasMore or diagramAttributes.edgeMappingsAttributes.size > 0){%],[%}%] 
+			[%}%]
+			[% for (edgeMappingAttributes in diagramAttributes.edgeMappingsAttributes) {-%]
+				new [%=edgeMappingAttributes.descriptionProvider%](colorProvider)[%if(hasMore){%],[%}%] 
+			[%}%]
+		);
+		
+		diagramElementDescriptionProviders.stream().map(IDiagramElementDescriptionProvider::create).forEach(cache::put);
+
+		diagramElementDescriptionProviders.forEach(diagramElementDescriptionProvider -> diagramElementDescriptionProvider.link(diagramDescription, cache));
+
+        var palette = this.createDiagramPalette(cache);
+        diagramDescription.setPalette(palette);
+
+        return diagramDescription;
+    }
+    
+	private DiagramPalette createDiagramPalette(IViewDiagramElementFinder cache) {
+    	return this.diagramBuilderHelper.newDiagramPalette()
+                .toolSections(this.createDiagramToolSection(cache))
+                .build();
+    }
+
+    private DiagramToolSection createDiagramToolSection(IViewDiagramElementFinder cache) {
+        return this.diagramBuilderHelper.newDiagramToolSection()
+                .name("Creation Tools")
+                .nodeTools([% for (nodeMappingAttributes in diagramAttributes.nodeMappingsAttributes.select(c|c.hasCreateTool==true)) {%]this.createNodeTool_Create[%=nodeMappingAttributes.type%]()[%if(hasMore or diagramAttributes.containerMappingsAttributes.select(c|c.hasCreateTool==true).size > 0){%], [%}%][%}%][% for (containerMappingAttributes in diagramAttributes.containerMappingsAttributes.select(c|c.hasCreateTool==true)) {%]this.createNodeTool_Create[%=containerMappingAttributes.type%]()[%if(hasMore){%], [%}%][%}%])
+                .build();
+    }
+    
+	[% for (nodeMappingAttributes in diagramAttributes.nodeMappingsAttributes.select(c|c.hasCreateTool==true)) {-%]
+		private NodeTool createNodeTool_Create[%=nodeMappingAttributes.type%]() {
+	
+	        var changeContextNewInstance = this.viewBuilderHelper.newChangeContext()
+	                .expression("aql:newInstance");
+	
+	        var createInstance = this.viewBuilderHelper.newCreateInstance()
+	                .typeName("[%=nodeMappingAttributes.domainClass%]")
+	                .referenceName("[%=nodeMappingAttributes.feature%]")
+	                .variableName("newInstance")
+	                .children(changeContextNewInstance.build());
+	
+	        return this.diagramBuilderHelper.newNodeTool()
+	                .name("[%=nodeMappingAttributes.type%]")
+	                .iconURLsExpression("/icons/full/obj16/[%=nodeMappingAttributes.type%].gif")
+	                .body(createInstance.build())
+	                .build();
+		}
+	[%}%]
+	
+	[% for (containerMappingAttributes in diagramAttributes.containerMappingsAttributes.select(c|c.hasCreateTool==true)) {-%]
+		private NodeTool createNodeTool_Create[%=containerMappingAttributes.type%]() {
+	
+	        var changeContextNewInstance = this.viewBuilderHelper.newChangeContext()
+	                .expression("aql:newInstance");
+	
+	        var createInstance = this.viewBuilderHelper.newCreateInstance()
+	                .typeName("[%=containerMappingAttributes.domainClass%]")
+	                .referenceName("[%=containerMappingAttributes.feature%]")
+	                .variableName("newInstance")
+	                .children(changeContextNewInstance.build());
+	
+	        return this.diagramBuilderHelper.newNodeTool()
+	                .name("[%=containerMappingAttributes.type%]")
+	                .iconURLsExpression("/icons/full/obj16/[%=containerMappingAttributes.type%].gif")
+	                .body(createInstance.build())
+	                .build();
+		}
+	[%}%]
+	
+}
+		
