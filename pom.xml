@@ -4,9 +4,12 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>uk.ac.york.astro</groupId>
-  <artifactId>astro</artifactId>
+  <artifactId>uk.ac.york.astro.parent</artifactId>
   <version>1.0.0-SNAPSHOT</version>
   <packaging>pom</packaging>
+
+    
+   
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -21,6 +24,36 @@
     <module>features</module>
     <module>releng</module>
   </modules>
+  
+   <dependencyManagement>
+        <dependencies>
+            <!-- Centralized dependency versions -->
+            <dependency>
+                <groupId>uk.ac.york.astro</groupId>
+                <artifactId>uk.ac.york.astro</artifactId>
+                <version>1.0.0-SNAPSHOT</version>
+                <type>eclipse-plugin</type>
+            </dependency>
+            <dependency>
+                <groupId>uk.ac.york.astro</groupId>
+                <artifactId>uk.ac.york.astro.domain</artifactId>
+                <version>1.0.0-SNAPSHOT</version>
+                <type>eclipse-plugin</type>
+            </dependency>
+            <dependency>
+                <groupId>uk.ac.york.astro</groupId>
+                <artifactId>uk.ac.york.astro.domain.edit</artifactId>
+                <version>1.0.0-SNAPSHOT</version>
+                <type>eclipse-plugin</type>
+            </dependency>
+            <dependency>
+                <groupId>uk.ac.york.astro</groupId>
+                <artifactId>uk.ac.york.astro.domain.editor</artifactId>
+                <version>1.0.0-SNAPSHOT</version>
+                <type>eclipse-plugin</type>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
   <build>
     <plugins>
