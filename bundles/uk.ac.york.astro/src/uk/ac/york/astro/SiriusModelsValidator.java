@@ -22,7 +22,7 @@ import org.eclipse.epsilon.evl.execute.UnsatisfiedConstraint;
 import org.eclipse.sirius.diagram.description.DescriptionPackage;
 import org.eclipse.sirius.properties.PropertiesPackage;
 
-import astro.AstroPackage;
+//import astro.AstroPackage;
 import uk.ac.york.astro.util.UtilityService;
 
 
@@ -76,7 +76,7 @@ public class SiriusModelsValidator extends Job {
  		metamodel.load();
  				
  		EmfModel generatorParameters = new EmfModel();
- 		generatorParameters.setMetamodelUris(Arrays.asList(AstroPackage.eINSTANCE.getNsURI()));
+ 		//generatorParameters.setMetamodelUris(Arrays.asList(AstroPackage.eINSTANCE.getNsURI()));
  		generatorParameters.setModelFileUri(generatorParametersUri);
  		generatorParameters.setName("P");
  		generatorParameters.setReadOnLoad(true);
