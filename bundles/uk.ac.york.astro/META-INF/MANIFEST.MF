@@ -16,5 +16,4 @@ Require-Bundle: org.eclipse.sirius.diagram.model;bundle-version="7.0.6",
  org.eclipse.epsilon.eol.dt;bundle-version="2.5.0",
  org.eclipse.epsilon.common.dt;bundle-version="2.5.0",
  org.eclipse.epsilon.evl.engine;bundle-version="2.5.0",
- org.eclipse.epsilon.evl.emf.validation;bundle-version="2.5.0",
- uk.ac.york.astro.domain;bundle-version="1.0.0"
+ org.eclipse.epsilon.evl.emf.validation;bundle-version="2.5.0"

@@ -22,7 +22,7 @@ import org.eclipse.epsilon.emc.emf.EmfModel;
 import org.eclipse.sirius.diagram.description.DescriptionPackage;
 import org.eclipse.sirius.properties.PropertiesPackage;
 
-import astro.AstroPackage;
+//import astro.AstroPackage;
 import uk.ac.york.astro.util.UtilityService;
 
 import org.eclipse.epsilon.eol.dt.ExtensionPointToolNativeTypeDelegate;
@@ -79,7 +79,7 @@ public class Sirius2SiriusWeb extends Job {
  		metamodel.load();
  				
  		EmfModel generatorParameters = new EmfModel();
- 		generatorParameters.setMetamodelUris(Arrays.asList(AstroPackage.eINSTANCE.getNsURI()));
+ 		//generatorParameters.setMetamodelUris(Arrays.asList(AstroPackage.eINSTANCE.getNsURI()));
  		generatorParameters.setModelFileUri(generatorParametersUri);
  		generatorParameters.setName("P");
  		generatorParameters.setReadOnLoad(true);
