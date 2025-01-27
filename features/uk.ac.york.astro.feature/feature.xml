@@ -297,4 +297,16 @@ version(s), and exceptions or additional permissions here}.&quot;
          id="uk.ac.york.astro"
          version="0.0.0"/>
 
+   <plugin
+         id="uk.ac.york.astro.domain"
+         version="0.0.0"/>
+
+   <plugin
+         id="uk.ac.york.astro.domain.edit"
+         version="0.0.0"/>
+
+   <plugin
+         id="uk.ac.york.astro.domain.editor"
+         version="0.0.0"/>
+
 </feature>
