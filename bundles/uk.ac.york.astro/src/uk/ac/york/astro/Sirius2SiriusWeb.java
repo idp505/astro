@@ -41,7 +41,7 @@ public class Sirius2SiriusWeb extends Job {
 	public Sirius2SiriusWeb(IFile odesign, IFile metamodel, IFile generatorParameters)  {
 		super("Generate Sirius Web editor");
 		odesignFile = odesign;
-		metamodelFile = metamodel;		
+		metamodelFile =  metamodel;		
 		generatorParametersFile = generatorParameters;
 		odesignUri = UtilityService.getPlatformURI(odesign);
 		metamodelUri = UtilityService.getPlatformURI(metamodel);
