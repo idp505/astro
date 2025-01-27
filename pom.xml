@@ -88,6 +88,21 @@
               <artifactId>uk.ac.york.astro.target</artifactId>
               <version>${project.version}</version>
             </artifact>
+            <artifact>
+              <groupId>${project.groupId}</groupId>
+              <artifactId>uk.ac.york.astro.domain.target</artifactId>
+              <version>${project.version}</version>
+            </artifact>
+            <artifact>
+              <groupId>${project.groupId}</groupId>
+              <artifactId>uk.ac.york.astro.domain.edit.target</artifactId>
+              <version>${project.version}</version>
+            </artifact>
+            <artifact>
+              <groupId>${project.groupId}</groupId>
+              <artifactId>uk.ac.york.astro.domain.editor.target</artifactId>
+              <version>${project.version}</version>
+            </artifact>
           </target>
           <environments>
             <environment>
